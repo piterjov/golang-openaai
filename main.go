@@ -28,7 +28,15 @@ func generateText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseText, err := textgenerator.GetApiResponse(reqBody.Query, reqBody.OpenAPIKey)
+	params := textgenerator.OpenAIParams {
+		Question: reqBody.Query,
+		APIkey: reqBody.OpenAPIKey,
+		MaxTokens: 1000,
+		Temperature: 2.0,
+	}
+
+	responseText, err := textgenerator.GetApiResponse(params)
+
 	fmt.Println(err)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error generating text: %s", err.Error()), http.StatusInternalServerError)

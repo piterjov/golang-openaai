@@ -46,8 +46,16 @@ func readConfig(filePath string) (Config, error) {
 	return config, nil
 }
 
+type OpenAIParams struct {
+	Question string 
+	APIkey string
+	MaxTokens int
+	Temperature float64
 
-func GetApiResponse(question string, apiKey string) (string, error) {
+}
+
+
+func GetApiResponse(params OpenAIParams) (string, error) {
 	config, err := readConfig("config.json")
 	apiUrl := config.ApiEndpoint
 
@@ -62,7 +70,7 @@ func GetApiResponse(question string, apiKey string) (string, error) {
         "messages": []map[string]string{
             {
                 "role": "user",
-                "content": question,
+                "content": params.Question,
             },
         },
     }
@@ -79,7 +87,7 @@ func GetApiResponse(question string, apiKey string) (string, error) {
 
 	// apiKey :=  config.ApiKey
 
-	req.Header.Set("Authorization", "Bearer "+apiKey)
+	req.Header.Set("Authorization", "Bearer "+ params.APIkey)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
