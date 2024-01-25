@@ -14,7 +14,7 @@ type RequestBody struct {
 
 }
 
-func generateText(w http.ResponseWriter, r *http.Request) {
+func generateText(w http.ResponseWriter, r *http.Request, config *textgenerator.Config) {
 	if r.Method != "POST" {
 		http.Error(w, "Only POST method is allowed", http.StatusMethodNotAllowed)
 		return
@@ -24,7 +24,7 @@ func generateText(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&reqBody)
 
 	if err != nil {
-		http.Error(w, "Error reading request body", http.StatusBadRequest)
+		http.Error(w, "Error reading request body", http.StatusBadRequest,)
 		return
 	}
 
@@ -35,7 +35,7 @@ func generateText(w http.ResponseWriter, r *http.Request) {
 		Temperature: 2.0,
 	}
 
-	responseText, err := textgenerator.GetApiResponse(params)
+	responseText, err := textgenerator.GetApiResponse(params, config)
 
 	fmt.Println(err)
 	if err != nil {
@@ -47,8 +47,15 @@ func generateText(w http.ResponseWriter, r *http.Request) {
 }
  
 func main() {
+	config, err := textgenerator.ReadConfig("config.json")
 
-	http.HandleFunc("/generate-text", generateText)
+	if err != nil {
+		fmt.Println("Error reading config file")
+	}
+
+	http.HandleFunc("/generate-text", func (w http.ResponseWriter, r *http.Request) {
+		generateText(w, r, &config)
+	})
 
 	fmt.Println("Starting server on port 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

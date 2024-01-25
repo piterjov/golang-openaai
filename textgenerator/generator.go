@@ -26,7 +26,7 @@ type ApiResponse struct {
 	Choices []Choice `json:"choices"`
 }
 
-func readConfig(filePath string) (Config, error) {
+func ReadConfig(filePath string) (Config, error) {
 	var config Config
 	configFile, err := os.Open(filePath)
 
@@ -55,13 +55,10 @@ type OpenAIParams struct {
 }
 
 
-func GetApiResponse(params OpenAIParams) (string, error) {
-	config, err := readConfig("config.json")
-	apiUrl := config.ApiEndpoint
+func GetApiResponse(params OpenAIParams, config *Config) (string, error) {
+ 	apiUrl := config.ApiEndpoint
 
-	if err != nil { 
-		fmt.Println("Error reading config file")
-	}
+ 
 	
  
     payload := map[string]interface{}{
